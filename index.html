@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pi me</title>
+  </head> 
+  <body>
+    <h2>Blink, baby, blink!</h2>
+
+    <button id="blink">Blink it!</button>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        var blink = document.getElementById('blink');
+        blink.addEventListener( 'click', function( event ) {
+          event.preventDefault();
+
+          request = new XMLHttpRequest
+          request.open('GET', '/blink', true)
+
+          request.onload = function() {
+            if (request.status >= 200 && request.status < 400){
+              console.log(request);
+              console.log( request.responseText );
+            } else {
+              console.log('You had an error.');
+            }
+          }
+
+          request.onerror = function() {
+            console.log('You had an error.');
+          }
+
+          request.send();
+        });
+      });
+    </script>
+  </body>
+</html>
