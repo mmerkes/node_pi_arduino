@@ -1,0 +1,100 @@
+!!!
+
+%html
+  %head
+    %title Home Control
+    :css
+      * {
+        font-family: "Helvetica", sans-serif;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        color: navy;
+        width: 800px;
+        margin: 0 auto;
+      }
+      .row-fluid {
+        margin-top: 20px;
+      }
+      .container .row-fluid > .span6 {
+        float: left;
+      }
+      .container .row-fluid .span6 {
+        width: 48%;
+      }
+      .container .row-fluid .span6 {
+        margin-right: 5%;
+      }
+      button.btn-block, a.btn-block {
+        display: block;
+        width: 100%;
+      }
+      button.btn-large, a.btn-large {
+        margin-top: 3em;
+        padding: 1em;
+        font-size: 2em;
+      }
+      button, a {
+        cursor: pointer;
+      }
+  %body
+    .container
+      .row-fluid
+        .span12
+          %button.btn-block.btn-large#sock1 Lamp On/Off
+      .row-fluid
+        .span12
+          %button.btn-block.btn-large#sock2 Christmas Lights On/Off
+
+    :javascript
+      document.addEventListener('DOMContentLoaded', function(){
+        var blink = document.getElementById('sock1');
+        blink.addEventListener( 'click', function( event ) {
+          event.preventDefault();
+
+          request = new XMLHttpRequest
+          request.open('GET', '/sock/1', true)
+
+          request.onload = function() {
+            if (request.status >= 200 && request.status < 400){
+              console.log(request);
+              console.log( request.responseText );
+            } else {
+              console.log('You had an error.');
+            }
+          }
+
+          request.onerror = function() {
+            console.log('You had an error.');
+          }
+
+          request.send();
+        });
+      });
+
+      document.addEventListener('DOMContentLoaded', function(){
+        var blink = document.getElementById('sock2');
+        blink.addEventListener( 'click', function( event ) {
+          event.preventDefault();
+
+          request = new XMLHttpRequest
+          request.open('GET', '/sock/2', true)
+
+          request.onload = function() {
+            if (request.status >= 200 && request.status < 400){
+              console.log(request);
+              console.log( request.responseText );
+            } else {
+              console.log('You had an error.');
+            }
+          }
+
+          request.onerror = function() {
+            console.log('You had an error.');
+          }
+
+          request.send();
+        });
+      });
