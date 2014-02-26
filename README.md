@@ -1,3 +1,52 @@
+# Node-Pi-Arduino
+
 To get the basic server working, `npm install` the dependencies, and run `node server`. This will only work if the Arduino is hooked up to the USB port. At the moment, it runs a server on port 8080 and turns pin 13 on and off.
 
-For running on Raspberry Pi, after you `npm install`, change line 75 in the node_modules/duino/lib/board.js to `ls /dev | grep -e usb -e USB -e ACM`
+## Dependencies
+
+### Node
+
+If running on Ubuntu, you may want to do the following to get an
+up-to-date package:
+
+sudo aptitude update
+sudo aptitude install -y python-software-properties python g++ make
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo aptitude update
+sudo aptitude install nodejs
+
+That will install node and npm.
+
+### Java
+
+If you don't already have Java, you'll need to do
+
+````
+sudo aptitude install openjdk-7-jre
+````
+
+## Platform Specific
+
+Basically, the problem seems to be locating the Arduino.
+
+### OS X
+
+Things seem to work?
+
+### Raspbian on Raspberry Pi
+
+After you `npm install`, change line 75 in the 
+node_modules/duino/lib/board.js to 
+
+````
+ls /dev | grep -e usb -e USB -e ACM
+````
+
+### Ubuntu, 32bit
+
+Seems you need to change line 75 in
+node_modules/duino/lib/board.js to 
+
+````
+ls /dev | grep -e ACM
+````
