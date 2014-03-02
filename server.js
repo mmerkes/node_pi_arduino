@@ -2,6 +2,8 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
 
 var Haml = require("haml"),
     fs = require("fs");
@@ -12,12 +14,14 @@ var arduino = require('duino'),
       device: "ACM"
     });
 
-var sock2 = new arduino.Led({
+var pins = {};
+
+pins[12] = new arduino.Led({
   board: board,
   pin: 12
 });
 
-var sock1 = new arduino.Led({
+pins[11] = new arduino.Led({
   board: board,
   pin: 11
 });
@@ -31,12 +35,7 @@ app.use(express.methodOverride());
 app.use(app.router);
 //app.use(express.static(path.join(__dirname)));
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-});
-
-var sock1State = false;
-var sock2State = false;
+server.listen( port );
 
 app.get("/", function( req, res ) {
   var haml = fs.readFileSync("index.html.haml", "utf8");
@@ -44,28 +43,20 @@ app.get("/", function( req, res ) {
   res.send(Haml.render(haml));
 });
 
-app.get('/sock/1', function( request, response ) {
-  if( sock1State ) {
-    sock1State = false;
-    sock1.on();
-    response.send( 'It should be off.');
-  } else {
-    sock1State = true;
-    sock1.off();
-    response.send( 'It should be on.');
-  }
-  response.end();
+io.sockets.on('connection', function( socket ) {
+  socket.on('update-pins', function( data ) {
+    for( var pin in data ) {
+      if( data[pin] ) {
+        console.log('Turning pin ' + pin + ' on.');
+        pins[pin].on();
+      } else {
+        console.log('Turning pin ' + pin + ' off.');
+        pins[pin].off();
+      }
+    }
+    // We can add error handling once we figure out how
+    // duino handles errors.
+    socket.emit('message', "Your request has been processed.");
+  });
 });
 
-app.get('/sock/2', function( request, response ) {
-  if( sock2State ) {
-    sock2State = false;
-    sock2.on();
-    response.send( 'It should be off.');
-  } else {
-    sock2State = true;
-    sock2.off();
-    response.send( 'It should be on.');
-  }
-  response.end();
-});

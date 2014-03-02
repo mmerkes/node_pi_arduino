@@ -49,52 +49,37 @@
           %button.btn-block.btn-large#sock2 Christmas Lights On/Off
 
     :javascript
-      document.addEventListener('DOMContentLoaded', function(){
-        var blink = document.getElementById('sock1');
-        blink.addEventListener( 'click', function( event ) {
-          event.preventDefault();
+      var socket = io.connect('http://localhost');
 
-          request = new XMLHttpRequest
-          request.open('GET', '/sock/1', true)
-
-          request.onload = function() {
-            if (request.status >= 200 && request.status < 400){
-              console.log(request);
-              console.log( request.responseText );
-            } else {
-              console.log('You had an error.');
-            }
-          }
-
-          request.onerror = function() {
-            console.log('You had an error.');
-          }
-
-          request.send();
-        });
+      socket.on('message', function(data) {
+        console.log(data);
       });
 
       document.addEventListener('DOMContentLoaded', function(){
-        var blink = document.getElementById('sock2');
-        blink.addEventListener( 'click', function( event ) {
+        // all of the buttons should have the 'pins' class
+        var pins = document.querySelectorAll('.pins');
+        // The submit button should have the id 'update-pins'
+        var updatePins = document.getElementById('update-pins');
+        updatePins.addEventListener( 'click', function( event ) {
           event.preventDefault();
 
-          request = new XMLHttpRequest
-          request.open('GET', '/sock/2', true)
+          // Save the state of the buttons
+          var data = {};
 
-          request.onload = function() {
-            if (request.status >= 200 && request.status < 400){
-              console.log(request);
-              console.log( request.responseText );
+          for( var i = 0; i < pins.length; i++ ) {
+            // Assuming they start with only one class
+            // the second element in the classList should be 
+            // 'active' if it's set.
+            if( pins[i].classList[1] === 'active' ) {
+              // The id of the element should just be the pin number
+              data[ pins[i].id ] = 1;
             } else {
-              console.log('You had an error.');
+              // should be set to 0 if it should be off
+              data[ pins[i].id ] = 0;
             }
           }
 
-          request.onerror = function() {
-            console.log('You had an error.');
-          }
-
-          request.send();
+          socket.emit('update-pins', data );
         });
       });
+
