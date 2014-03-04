@@ -3,6 +3,7 @@
 %html
   %head
     %title Home Control
+    %script{ src: "//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js" }
     :css
       * {
         font-family: "Helvetica", sans-serif;
@@ -40,13 +41,13 @@
         cursor: pointer;
       }
   %body
-    .container
+    .container#update-pins
       .row-fluid
         .span12
-          %button.btn-block.btn-large#sock1 Lamp On/Off
+          %button.btn-block.btn-large.pins{ "data-pin-id" => 12 } Lamp On/Off
       .row-fluid
         .span12
-          %button.btn-block.btn-large#sock2 Christmas Lights On/Off
+          %button.btn-block.btn-large.pins{ "data-pin-id" => 11 } Christmas Lights On/Off
 
     :javascript
       var socket = io.connect('http://localhost');

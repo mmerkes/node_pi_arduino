@@ -46,6 +46,7 @@ app.get("/", function( req, res ) {
 io.sockets.on('connection', function( socket ) {
   socket.on('update-pins', function( data ) {
     for( var pin in data ) {
+      console.log("pin data: " + data[pin]);
       if( data[pin] ) {
         console.log('Turning pin ' + pin + ' on.');
         pins[pin].on();
