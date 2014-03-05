@@ -16,15 +16,12 @@ var arduino = require('duino'),
 
 var pins = {};
 
-pins[12] = new arduino.Led({
-  board: board,
-  pin: 12
-});
-
-pins[11] = new arduino.Led({
-  board: board,
-  pin: 11
-});
+for ( i = 2; i < 13; i++) {
+  pins[i] = new arduino.Led({
+    board: board,
+    pin: i,
+  }); 
+}
 
 app.set('port', process.env.PORT || 3000);
 app.use(express.favicon());
@@ -35,7 +32,7 @@ app.use(express.methodOverride());
 app.use(app.router);
 //app.use(express.static(path.join(__dirname)));
 
-server.listen( port );
+server.listen(process.env.PORT || 3000);
 
 app.get("/", function( req, res ) {
   var haml = fs.readFileSync("index.html.haml", "utf8");
@@ -45,9 +42,10 @@ app.get("/", function( req, res ) {
 
 io.sockets.on('connection', function( socket ) {
   socket.on('update-pins', function( data ) {
+    
     for( var pin in data ) {
       console.log("pin data: " + data[pin]);
-      if( data[pin] ) {
+      if ( data[pin] === 1 ) {
         console.log('Turning pin ' + pin + ' on.');
         pins[pin].on();
       } else {
