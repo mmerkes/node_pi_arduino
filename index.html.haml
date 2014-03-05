@@ -1,31 +1,16 @@
 !!!
-
 %html
   %head
     %title Home Control
+    %script{ src: "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"  }
+    %script{ src: "//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js" }
+    %stylesheet{ href: "//cdnjs.cloudflare.com/ajax/libs/skeleton/1.2/skeleton.min.css" }
     :css
       * {
         font-family: "Helvetica", sans-serif;
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-      }
-      .container {
-        color: navy;
-        width: 800px;
-        margin: 0 auto;
-      }
-      .row-fluid {
-        margin-top: 20px;
-      }
-      .container .row-fluid > .span6 {
-        float: left;
-      }
-      .container .row-fluid .span6 {
-        width: 48%;
-      }
-      .container .row-fluid .span6 {
-        margin-right: 5%;
       }
       button.btn-block, a.btn-block {
         display: block;
@@ -39,47 +24,54 @@
       button, a {
         cursor: pointer;
       }
+      [data-pin-status="1"] {
+        background-color: darkgreen;
+        color: white;
+      }
+      [data-pin-status="0"] {
+        background-color: maroon;
+        color: white;
+      }
   %body
-    .container
-      .row-fluid
-        .span12
-          %button.btn-block.btn-large#sock1 Lamp On/Off
-      .row-fluid
-        .span12
-          %button.btn-block.btn-large#sock2 Christmas Lights On/Off
+    .container#update-pins
+      .row
+        .sixteen.columns
+          <button class="btn-block btn-large pin" data-pin-id=11> Lamp On/Off </button>
+      .row
+        .sixteen.columns
+          <button class="btn-block btn-large pin" data-pin-id=12> Christmas Lights On/Off </button>
 
     :javascript
-      var socket = io.connect('http://localhost');
+      var socket = io.connect('http://192.168.1.3:3000');
 
       socket.on('message', function(data) {
         console.log(data);
       });
 
-      document.addEventListener('DOMContentLoaded', function(){
-        // all of the buttons should have the 'pins' class
-        var pins = document.querySelectorAll('.pins');
-        // The submit button should have the id 'update-pins'
-        var updatePins = document.getElementById('update-pins');
-        updatePins.addEventListener( 'click', function( event ) {
+      $(function() {
+        var pins = $(".pin");
+
+        $("#update-pins .pin").on('click', function( event ) {
           event.preventDefault();
 
-          // Save the state of the buttons
           var data = {};
+          var pinId = $(this).attr("data-pin-id");
+          console.log($(this));
 
-          for( var i = 0; i < pins.length; i++ ) {
-            // Assuming they start with only one class
-            // the second element in the classList should be 
-            // 'active' if it's set.
-            if( pins[i].classList[1] === 'active' ) {
-              // The id of the element should just be the pin number
-              data[ pins[i].id ] = 1;
-            } else {
-              // should be set to 0 if it should be off
-              data[ pins[i].id ] = 0;
-            }
+          var action;
+          if ( $(this).attr("data-pin-status") == 1 ) {
+            action = 0;
+          } else {
+            action = 1;
           }
 
+          console.log(data);
+
+          data[pinId] = action;
           socket.emit('update-pins', data );
+
+
+          $(this).attr("data-pin-status", action);
         });
       });
 
