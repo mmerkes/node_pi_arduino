@@ -1,5 +1,4 @@
 !!!
-
 %html
   %head
     %title Home Control
@@ -43,7 +42,7 @@
           %button.btn-block.btn-large.pin{ "data-pin-id" => 11 } Christmas Lights On/Off
 
     :javascript
-      var socket = io.connect('http://localhost');
+      var socket = io.connect('http://192.168.1.3:3000');
 
       socket.on('message', function(data) {
         console.log(data);
